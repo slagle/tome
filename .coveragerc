@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = tome
+omit = tome/tests/*,tome/openstack/*
+
+[report]
+ignore-errors = True
