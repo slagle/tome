@@ -8,6 +8,11 @@ class User(Artifact):
     username = None
     homedir = None
 
+    __slots__ = [
+        "username",
+        "homedir"
+    ]
+
     def _realize(self):
         execute("useradd", self.username)
 
