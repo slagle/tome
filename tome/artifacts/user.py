@@ -13,15 +13,18 @@ class User(Artifact):
         "homedir"
     ]
 
-    def _realize(self):
+    def realize(self):
         execute("useradd", self.username)
 
-    def _unrealize(self):
+    def unrealize(self):
         execute("userdel", self.username)
 
-    def _is_realized(self):
+    @classmethod
+    def is_realized(cls, username=None):
+        if username is None:
+            username = cls.username
         try:
-            entry = pwd.getpwnam(self.username)
+            entry = pwd.getpwnam(username)
         except KeyError, e:
             return False
         return True
