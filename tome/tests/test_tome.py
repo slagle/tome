@@ -64,9 +64,17 @@ class TestFileArtifact(base.TestCase):
         self.assertEquals(open(TestFile.path).read(), TestFile.contents)
 
     def test_exists(self):
-        self.assertFalse(TestFile.exists())
+        f = TestFile
+        self.assertFalse(f._exists())
+        f = f()
+        self.assertTrue(f.exists())
+        f.remove()
+        self.assertFalse(f.exists())
+
+    def test_cls_exists(self):
+        self.assertFalse(TestFile._exists())
         TestFile()
-        self.assertTrue(TestFile.exists())
+        self.assertTrue(TestFile._exists())
 
 
 class TestTome(base.TestCase):

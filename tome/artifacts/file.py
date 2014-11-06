@@ -19,8 +19,7 @@ class File(Artifact):
     def remove(self):
         os.unlink(self.path)
 
-    @classmethod
-    def exists(cls, path=None):
+    def exists(self, path=None):
         if path is None:
-            path = cls.path
+            path = self.path
         return os.path.exists(path)

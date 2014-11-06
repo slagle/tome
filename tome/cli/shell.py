@@ -2,6 +2,7 @@ import logging
 import sys
 
 from cliff.app import App
+from cliff.commandmanager import CommandManager
 
 log = logging.getLogger(__name__)
 
@@ -9,9 +10,9 @@ class TomeApp(App):
 
     def __init__(self):
         super(TomeApp, self).__init__(
-            description='cliff demo app',
+            description='tome app',
             version='0.1',
-            command_manager=CommandManager('cliff.demo'),
+            command_manager=CommandManager('tome.cli.commands'),
             )
 
     def initialize_app(self, argv):
@@ -25,6 +26,14 @@ class TomeApp(App):
         if err:
             log.debug('got an error: %s', err)
 
+    def build_option_parser(self, *args, **kwargs):
+        parser = super(TomeApp, self).build_option_parser(*args, **kwargs)
+        return parser
+
+    def configure_logging(self):
+        if self.options.debug:
+            logging.basicConfig(level=logging.DEBUG)
+        super(TomeApp, self).configure_logging()
 
 def main(argv=sys.argv[1:]):
     tome_app = TomeApp()
