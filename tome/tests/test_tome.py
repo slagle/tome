@@ -24,6 +24,8 @@ import tempfile
 
 from tome import artifact
 from tome.artifacts import file as file_module
+from tome.artifacts import package
+from tome.cli import commands
 from tome.tests import base
 
 
@@ -65,19 +67,69 @@ class TestFileArtifact(base.TestCase):
 
     def test_exists(self):
         f = TestFile
-        self.assertFalse(f._exists())
+        self.assertFalse(f.exists())
         f = f()
         self.assertTrue(f.exists())
         f.remove()
         self.assertFalse(f.exists())
 
     def test_cls_exists(self):
-        self.assertFalse(TestFile._exists())
+        self.assertFalse(TestFile.exists())
         TestFile()
-        self.assertTrue(TestFile._exists())
+        self.assertTrue(TestFile.exists())
+
+    def test_cls_add(self):
+        self.assertFalse(TestFile.exists())
+        TestFile.add()
+        self.assertTrue(TestFile.exists())
+
+    def test_cls_remove(self):
+        self.assertFalse(TestFile.exists())
+        TestFile.add()
+        self.assertTrue(TestFile.exists())
+        TestFile.remove()
+        self.assertFalse(TestFile.exists())
+
+class TestArtifact(base.TestCase):
+    pass
 
 
-class TestTome(base.TestCase):
+class TestArtifactCommand(base.TestCase):
 
-    def test_something(self):
-        pass
+    def setUp(self):
+        super(TestArtifactCommand, self).setUp()
+        self.ac = commands.ArtifactCommand(None, None)
+        self.artifact_file = ''
+        self.artifact_path = ''
+
+    def tearDown(self):
+        super(TestArtifactCommand, self).tearDown()
+        if self.artifact_path:
+            os.unlink(self.artifact_path)
+
+    def test_normalize_module_name(self):
+        ac = commands.ArtifactCommand(None, None)
+        self.assertEquals('testfoo',
+            ac.normalize_module_name('testfoo.py')[1])
+        self.assertEquals('testbar.testfoo',
+            ac.normalize_module_name('testbar.testfoo.py')[1])
+        self.assertEquals('/path/to/module',
+            ac.normalize_module_name('/path/to/module/testbar.testfoo.py')[0])
+
+    def setup_artifact(self):
+        self.artifact_file, self.artifact_path = \
+            tempfile.mkstemp(suffix='.py')
+
+        os.write(self.artifact_file, """
+from tome.artifacts.package import YumPackage
+
+class Foo(YumPackage):
+    name = 'foo'
+""")
+
+    def test_get_module_artifacts(self):
+        self.setup_artifact()
+        module_path, module_name = self.ac.normalize_module_name(self.artifact_path)
+        artifacts = self.ac.get_module_artifacts(module_path, module_name)
+        self.assertEquals(len(artifacts), 1)
+        self.assertTrue(issubclass(artifacts[0], package.YumPackage))

@@ -17,7 +17,7 @@ class RPMPackage(Package):
 
     def exists(self):
         ts = rpm.TransactionSet()
-        mi = ts.dbMatch('name', 'zsh')
+        mi = ts.dbMatch('name', self.name)
         if mi.count() > 0:
             return True
         else:
@@ -32,5 +32,3 @@ class YumPackage(RPMPackage):
     def remove(self):
         processutils.execute(
             '/usr/bin/sudo', 'yum', '-y', 'erase', self.name)
-        
-

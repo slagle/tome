@@ -19,6 +19,10 @@ class TomeApp(App):
         log.debug('initialize_app')
 
     def prepare_to_run_command(self, cmd):
+        self.stdout.write('################################################\n')
+        self.stdout.write('Starting run of tome...\n')
+        self.stdout.write('################################################\n')
+        self.stdout.write('\n')
         log.debug('prepare_to_run_command %s', cmd.__class__.__name__)
 
     def clean_up(self, cmd, result, err):

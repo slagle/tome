@@ -3,13 +3,11 @@ class ArtifactMeta(type):
     def __new__(meta, name, bases, classdict):
         meta.validate_types(bases, classdict)
         if 'remove' in classdict:
-            classdict['_remove'] = classmethod(classdict['remove'])
+            classdict['remove'] = classmethod(classdict['remove'])
         if 'add' in classdict:
-            classdict['_add'] = classmethod(classdict['add'])
+            classdict['add'] = classmethod(classdict['add'])
         if 'exists' in classdict:
-            classdict['_exists'] = classmethod(classdict['exists'])
-
-        classdict['do_commands'] = True
+            classdict['exists'] = classmethod(classdict['exists'])
 
         return type.__new__(meta, name, bases, classdict)
 
@@ -20,8 +18,6 @@ class ArtifactMeta(type):
 class Artifact(object):
 
     __metaclass__ = ArtifactMeta
-
-    do_commands = False
 
     def __init__(self, *args, **kwargs):
         kwargs = self._populate_kwargs(args, kwargs)
@@ -42,7 +38,6 @@ class Artifact(object):
     def remove(self, *args, **kwargs):
         raise NotImplementedError
 
-    @classmethod
     def exists(self, *args, **kwargs):
         raise NotImplementedError
 
@@ -59,7 +54,13 @@ class Artifact(object):
     def pre_remove(self, *args, **kwargs):
         raise NotImplementedError
 
-    def pre_remove(self, *args, **kwargs):
+    def post_remove(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def freeze(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def unfreeze(self, *args, **kwargs):
         raise NotImplementedError
 
 class ArtifactCollection(object):
