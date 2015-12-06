@@ -8,7 +8,7 @@ from tome.openstack.common import processutils
 class Package(Artifact):
 
     name = StringType
-    
+
     __slots__ = [
         'name',
     ]
@@ -24,7 +24,7 @@ class RPMPackage(Package):
             return False
 
 class YumPackage(RPMPackage):
-    
+
     def add(self):
         processutils.execute(
             '/usr/bin/sudo', 'yum', '-y', 'install', self.name)

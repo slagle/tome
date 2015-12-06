@@ -63,10 +63,10 @@ class Artifact(object):
     def unfreeze(self, *args, **kwargs):
         raise NotImplementedError
 
-class ArtifactCollection(object):
+class ArtifactGroup(object):
 
-    def __init__(self, artifacts):
-        self.artifacts = artifacts
+    def __init__(self, artifacts=None):
+        self.artifacts = artifacts or []
 
     def add(self):
         for artifact in self.artifacts:
@@ -83,5 +83,3 @@ class ArtifactCollection(object):
 
         return False not in results.values()
 
-class ArtifactGroup(object):
-    pass
