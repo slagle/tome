@@ -52,16 +52,16 @@ class TestFileArtifact(base.TestCase):
         self.assertTrue(os.path.exists(TestFile.path))
         self.assertEquals(open(TestFile.path).read(), TestFile.contents)
 
-    def test_remove(self):
+    def test_delete(self):
         f = TestFile()
-        f.remove()
+        f.delete()
         self.assertFalse(os.path.exists(TestFile.path))
 
-    def test_add(self):
+    def test_create(self):
         f = TestFile()
-        f.remove()
+        f.delete()
         self.assertFalse(os.path.exists(TestFile.path))
-        f.add()
+        f.create()
         self.assertTrue(os.path.exists(TestFile.path))
         self.assertEquals(open(TestFile.path).read(), TestFile.contents)
 
@@ -70,7 +70,7 @@ class TestFileArtifact(base.TestCase):
         self.assertFalse(f.exists())
         f = f()
         self.assertTrue(f.exists())
-        f.remove()
+        f.delete()
         self.assertFalse(f.exists())
 
     def test_cls_exists(self):
@@ -78,16 +78,16 @@ class TestFileArtifact(base.TestCase):
         TestFile()
         self.assertTrue(TestFile.exists())
 
-    def test_cls_add(self):
+    def test_cls_create(self):
         self.assertFalse(TestFile.exists())
-        TestFile.add()
+        TestFile.create()
         self.assertTrue(TestFile.exists())
 
-    def test_cls_remove(self):
+    def test_cls_delete(self):
         self.assertFalse(TestFile.exists())
-        TestFile.add()
+        TestFile.create()
         self.assertTrue(TestFile.exists())
-        TestFile.remove()
+        TestFile.delete()
         self.assertFalse(TestFile.exists())
 
 class TestArtifact(base.TestCase):

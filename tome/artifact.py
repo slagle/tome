@@ -1,11 +1,29 @@
+#!/usr/bin/env python
+#
+# Copyright 2015 James Slagle <james.slagle@gmail.com>
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
 class ArtifactMeta(type):
 
     def __new__(meta, name, bases, classdict):
         meta.validate_types(bases, classdict)
-        if 'remove' in classdict:
-            classdict['remove'] = classmethod(classdict['remove'])
-        if 'add' in classdict:
-            classdict['add'] = classmethod(classdict['add'])
+        if 'delete' in classdict:
+            classdict['delete'] = classmethod(classdict['delete'])
+        if 'create' in classdict:
+            classdict['create'] = classmethod(classdict['create'])
         if 'exists' in classdict:
             classdict['exists'] = classmethod(classdict['exists'])
 
@@ -16,6 +34,8 @@ class ArtifactMeta(type):
         pass
 
 class Artifact(object):
+    """Artifact base class
+    """
 
     __metaclass__ = ArtifactMeta
 
@@ -23,7 +43,7 @@ class Artifact(object):
         kwargs = self._populate_kwargs(args, kwargs)
         for k, v in kwargs.items():
             setattr(self, k, v)
-        self.add()
+        self.create()
 
     def _populate_kwargs(self, args, kwargs):
         slots = list(self.__slots__)
@@ -32,29 +52,32 @@ class Artifact(object):
             kwargs[slots.pop(0)] = arg
         return kwargs
 
-    def add(self, *args, **kwargs):
+    def __str__(self):
+        return self.__name__
+
+    def create(self, *args, **kwargs):
         raise NotImplementedError
 
-    def remove(self, *args, **kwargs):
+    def delete(self, *args, **kwargs):
         raise NotImplementedError
 
     def exists(self, *args, **kwargs):
         raise NotImplementedError
 
     @classmethod
-    def collection(cls, objects):
-        return ArtifactCollection(artifacts=objects)
+    def group(cls, objects):
+        return ArtifactGroup(artifacts=objects)
 
-    def pre_add(self, *args, **kwargs):
+    def pre_create(self, *args, **kwargs):
         raise NotImplementedError
 
-    def post_add(self, *args, **kwargs):
+    def post_create(self, *args, **kwargs):
         raise NotImplementedError
 
-    def pre_remove(self, *args, **kwargs):
+    def pre_delete(self, *args, **kwargs):
         raise NotImplementedError
 
-    def post_remove(self, *args, **kwargs):
+    def post_delete(self, *args, **kwargs):
         raise NotImplementedError
 
     def freeze(self, *args, **kwargs):
@@ -64,17 +87,19 @@ class Artifact(object):
         raise NotImplementedError
 
 class ArtifactGroup(object):
+    """Artifact Group base class
+    """
 
     def __init__(self, artifacts=None):
         self.artifacts = artifacts or []
 
-    def add(self):
+    def create(self):
         for artifact in self.artifacts:
-            artifact.add()
+            artifact.create()
 
-    def remove(self):
+    def delete(self):
         for artifact in self.artifacts:
-            artifact.unrealize()
+            artifact.delete()
 
     def exists(self):
         results = {}
@@ -82,4 +107,3 @@ class ArtifactGroup(object):
             results.push(artifact, artifact.exists())
 
         return False not in results.values()
-
